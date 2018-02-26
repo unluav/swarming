@@ -83,10 +83,29 @@ uint8_t CC1101::receiveByte(){
   return data;
 }
 
+void CC1101::transmitByte(uint8_t data){
+  start_transaction();
+  SPI.transfer(SINGLE_TX);
+  SPI.transfer(data);
+  stop_transaction();
+}
+
+void CC1101::transmit(uint8_t * data, uint8_t len){
+  start_transaction();
+  SPI.transfer(BURST_TX);
+  uint8_t i;
+  for(i = 0; i < len; i++){
+    SPI.transfer(data[i]);
+  }
+  stop_transaction();
+}
+
 void CC1101::setRecieve(){
+  mode = RECEIVE;
   sendCommand(SRX);
 }
 
 void CC1101::setTransmit(){
+  mode = TRANSMIT;
   sendCommand(STX);
 }
