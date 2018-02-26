@@ -42,8 +42,6 @@ private:
 public:
   uint8_t select_pin;
   CC1101_Mode mode;
-
-  virtual ~CC1101 ();
   void init(uint8_t csn);
   uint8_t readReg(uint16_t addr);
   void writeReg(uint8_t addr, uint8_t val);
@@ -51,7 +49,7 @@ public:
   void burstWriteReg(uint8_t addr, uint8_t * input, uint8_t len);
   void sendCommand(CC1101_Command command);
   uint8_t receiveByte();
-  void transmitByte(uint8_t data);
+  // void transmitByte(uint8_t data);
   void setRecieve();
   void setTransmit();
 };

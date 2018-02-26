@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <SPI.h>
-#include "../lib/cc1101.h"
+#include <CC1101.h>
 
 CC1101 radio;
 
