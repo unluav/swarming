@@ -27,29 +27,26 @@ void CC1101::init(uint8_t csn){
   digitalWrite(select_pin, HIGH);
 }
 
-uint8_t CC1101::readReg(uint16_t addr) {
-  addr &= ADDRESS_MASK;
-  addr |= READ_MASK;
-  addr = addr << 8;
+uint8_t CC1101::readReg(CC1101_reg addr) {
+  uint16_t reg = addr;
+  reg |= READ_MASK;
+  reg = reg << 8;
   start_transaction();
-  uint16_t data = SPI.transfer16(addr);
+  uint16_t data = SPI.transfer16(reg);
   stop_transaction();
   return data;
 }
 
-void CC1101::writeReg(uint8_t addr, uint8_t val){
-  addr &= ADDRESS_MASK;
+void CC1101::writeReg(CC1101_reg addr, uint8_t val){
   uint16_t data = (addr << 8) | val;
   start_transaction();
   SPI.transfer16(data);
   stop_transaction();
 }
 
-void CC1101::burstReadReg(uint8_t addr, uint8_t * output, uint8_t len){
-  addr &= ADDRESS_MASK;
-  addr |= BURST_READ_MASK;
+void CC1101::burstReadReg(CC1101_reg addr, uint8_t * output, uint8_t len){
   start_transaction();
-  SPI.transfer(addr);
+  SPI.transfer(addr | BURST_READ_MASK);
   uint8_t i;
   for(i = 0; i < len; i++){
     output[i] = SPI.transfer(0);
@@ -57,11 +54,9 @@ void CC1101::burstReadReg(uint8_t addr, uint8_t * output, uint8_t len){
   stop_transaction();
 }
 
-void CC1101::burstWriteReg(uint8_t addr, uint8_t * input, uint8_t len){
-  addr &= ADDRESS_MASK;
-  addr |= BURST_WRITE_MASK;
+void CC1101::burstWriteReg(CC1101_reg addr, uint8_t * input, uint8_t len){
   start_transaction();
-  SPI.transfer(addr);
+  SPI.transfer(addr | BURST_WRITE_MASK);
   uint8_t i;
   for(i = 0; i < len; i++){
     SPI.transfer(input[i]);
@@ -102,10 +97,17 @@ void CC1101::transmit(uint8_t * data, uint8_t len){
 
 void CC1101::setRecieve(){
   mode = RECEIVE;
-  sendCommand(SRX);
+  sendCommand(CC1101_SRX);
 }
 
 void CC1101::setTransmit(){
   mode = TRANSMIT;
-  sendCommand(STX);
+  sendCommand(CC1101_STX);
+}
+
+void CC1101::loadSettings(const uint8_t settings[][2], uint8_t len){
+  uint8_t i;
+  for(i = 0; i < len; i++){
+    writeReg((CC1101_reg) settings[i][0], settings[i][1]);
+  }
 }
