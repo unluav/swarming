@@ -78,6 +78,16 @@ uint8_t CC1101::receiveByte(){
   return data;
 }
 
+void CC1101::receive(uint8_t * data, uint8_t len){
+  start_transaction();
+  SPI.transfer(BURST_RX);
+  uint8_t i;
+  for(i = 0; i < len; i++){
+    data[i] = SPI.transfer(0);
+  }
+  stop_transaction();
+}
+
 void CC1101::transmitByte(uint8_t data){
   start_transaction();
   SPI.transfer(SINGLE_TX);
@@ -110,4 +120,16 @@ void CC1101::loadSettings(const uint8_t settings[][2], uint8_t len){
   for(i = 0; i < len; i++){
     writeReg((CC1101_reg) settings[i][0], settings[i][1]);
   }
+}
+
+uint8_t CC1101::bytesInTxBuffer(){
+  readReg(CC1101_TXBYTES);
+}
+
+uint8_t CC1101::bytesInRxBuffer(){
+  readReg(CC1101_RXBYTES);
+}
+
+void CC1101::setChannel(uint8_t channel){
+  writeReg(CC1101_CHANNR, channel);
 }

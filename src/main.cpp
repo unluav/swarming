@@ -39,8 +39,14 @@ void setup() {
   radio.setRecieve();
 }
 
+static uint8_t rxBuffer[64];
+static uint8_t rxLen = 0;
+
 void loop() {
-  uint8_t data = radio.receiveByte();
-  Serial.write(data);
+  rxLen = radio.bytesInRxBuffer();
+  if(rxLen > 0){
+    uint8_t data = radio.receive(rxBuffer, rxLen);
+    Serial.write(data);
+  }
   delay(1000);
 }
