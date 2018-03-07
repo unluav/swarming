@@ -2,7 +2,8 @@
 #include <SPI.h>
 #include <CC1101.h>
 
-CC1101 radio;
+CC1101 transmitter;
+CC1101 receiver;
 
 static const uint8_t defaultSettings[][2] =
 {
@@ -34,19 +35,24 @@ static const uint8_t defaultSettings[][2] =
 void setup() {
   SPI.begin();
   Serial.begin(9600);
-  radio.init(5);
-  radio.loadSettings(defaultSettings, 23);
-  radio.setRecieve();
+  transmitter.init(5);
+  receiver.init(4);
+  transmitter.loadSettings(defaultSettings, 23);
+  receiver.loadSettings(defaultSettings, 23);
+  transmitter.setTransmit();
+  receiver.setRecieve();
 }
 
-static uint8_t rxBuffer[64];
-static uint8_t rxLen = 0;
-
 void loop() {
-  rxLen = radio.bytesInRxBuffer();
-  if(rxLen > 0){
-    uint8_t data = radio.receive(rxBuffer, rxLen);
-    Serial.write(data);
-  }
+  char tx_data[] = "Test";
+  transmitter.transmit((uint8_t*) tx_data, 5);
+
+  while(transmitter.bytesInTxBuffer() != 0);
+  while(receiver.bytesInRxBuffer() != 5);
+
+  uint8_t rxdata[5] = {0, 0, 0, 0, 0};
+  receiver.receive(rxdata, 5);
+
+  Serial.println((char *) rxdata);
   delay(1000);
 }

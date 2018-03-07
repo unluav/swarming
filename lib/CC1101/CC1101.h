@@ -104,7 +104,7 @@ public:
   void burstWriteReg(CC1101_reg addr, uint8_t * input, uint8_t len);
   void sendCommand(CC1101_Command command);
   uint8_t receiveByte();
-  void receive(uint8_t * data, uint8_t len)
+  void receive(uint8_t * data, uint8_t len);
   void transmitByte(uint8_t data);
   void transmit(uint8_t * data, uint8_t len);
   void setRecieve();
